@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>星曜塔罗 · Tarot Oracle — 星座 × 心理学 × 大阿卡纳</title>
+  <meta name="description" content="一款结合塔罗牌、星辰与心理学的自我探索占卜工具。抽牌、看星象、照见内心。" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&family=Marcellus&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body data-screen="welcome">
+  <!-- 星辰背景 -->
+  <div class="cosmos" aria-hidden="true">
+    <canvas id="stars"></canvas>
+    <div class="nebula nebula-1"></div>
+    <div class="nebula nebula-2"></div>
+    <div class="moon-glow"></div>
+  </div>
+
+  <!-- 顶部栏 -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark">☽</span>
+      <span class="brand-name">星曜塔罗</span>
+      <span class="brand-sub">Tarot&nbsp;Oracle</span>
+    </div>
+    <div class="topbar-actions">
+      <button id="historyBtn" class="restart">☰ 历史</button>
+      <button id="restartBtn" class="restart" hidden>✧ 重新开始</button>
+    </div>
+  </header>
+
+  <main class="stage">
+    <!-- ============ 屏 0：欢迎 ============ -->
+    <section id="screen-welcome" class="screen active" data-screen="welcome">
+      <div class="hero">
+        <p class="hero-eyebrow">大阿卡纳 × 星辰 × 心理镜像</p>
+        <h1 class="hero-title">向内，照见答案</h1>
+        <p class="hero-lead">
+          抽一张牌，让大阿卡纳的智慧、你的星座能量与心理学之镜，
+          共同映照出你此刻真正需要被看见的部分。
+        </p>
+        <div class="promise">
+          <span class="promise-item">◎ 星象共鸣</span>
+          <span class="promise-item">◎ 荣格原型</span>
+          <span class="promise-item">◎ 自我探索</span>
+        </div>
+        <div class="cta-row">
+          <button data-goto="form" class="btn btn-primary">开始抽牌 →</button>
+          <button data-goto-example="1" class="btn btn-ghost">预览示例解读</button>
+          <button data-open-modal="learn" class="btn btn-ghost">了解怎么解读</button>
+        </div>
+      </div>
+
+      <div class="footnote">
+        <p class="legal">
+          本工具定位为<strong>自我探索与心理觉察</strong>的辅助，不构成医疗、法律或财务建议，也不可能预测真实未来。
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ 屏 1：信息表单 ============ -->
+    <section id="screen-form" class="screen" data-screen="form" hidden>
+      <div class="panel">
+        <p class="panel-kicker">第 1 步 / 2 · 关于你</p>
+        <h2 class="panel-title">让星辰认识你</h2>
+
+        <div class="field">
+          <label for="userName">怎么称呼你（可留空）</label>
+          <input id="userName" type="text" maxlength="12" placeholder="你的名字或昵称" autocomplete="off" />
+        </div>
+
+        <div class="field">
+          <label>你的星座</label>
+          <div id="zodiacPicker" class="zodiac-grid"></div>
+        </div>
+
+        <div class="field">
+          <label>此刻最想探寻的主题（可选）</label>
+          <div id="themePicker" class="theme-grid"></div>
+        </div>
+
+        <div class="field birth-field">
+          <label>出生时间（可选 · 用于推算月亮与上升星座）</label>
+          <div class="birth-grid">
+            <input id="birthDate" type="date" aria-label="出生日期" />
+            <input id="birthTime" type="time" aria-label="出生时间" />
+          </div>
+          <select id="birthCity" class="birth-city" aria-label="出生省份">
+            <option value="">选择出生省份（自动填坐标/时区）</option>
+          </select>
+          <div class="birth-loc">
+            <label>纬度 <input id="birthLat" type="number" step="0.01" placeholder="39.90" /></label>
+            <label>经度 <input id="birthLon" type="number" step="0.01" placeholder="116.40" /></label>
+            <label>时区 <select id="birthTz" class="tz-select"></select></label>
+          </div>
+          <p class="hint">填写后，解读将加入「三大主星（太阳/月亮/上升星座）」的个性化星象。出生地按省（省会/首府坐标）近似计算，全中国 UTC+8。</p>
+        </div>
+
+        <div class="form-actions">
+          <button data-goto="welcome" class="btn btn-ghost">← 返回</button>
+          <button id="toSpreadBtn" class="btn btn-primary" disabled>选择牌阵 →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 屏 2：选牌阵 ============ -->
+    <section id="screen-spread" class="screen" data-screen="spread" hidden>
+      <div class="panel">
+        <p class="panel-kicker">第 2 步 / 2 · 选择牌阵</p>
+        <h2 class="panel-title">怎么问，就怎么读</h2>
+        <p id="spreadContext" class="context-line"></p>
+        <div id="spreadGrid" class="spread-grid"></div>
+        <div class="form-actions">
+          <button data-goto="form" class="btn btn-ghost">← 返回</button>
+          <button id="toDrawBtn" class="btn btn-primary" disabled>开始抽牌 →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 屏 3：抽牌台 ============ -->
+    <section id="screen-draw" class="screen" data-screen="draw" hidden>
+      <div class="draw-stage">
+        <p class="panel-kicker">静心 · 深呼吸 · 集中你的问题</p>
+        <h2 id="drawTitle" class="panel-title">点选一张牌面</h2>
+        <p class="context-line" id="drawHint"></p>
+
+        <div class="table" aria-label="抽牌区">
+          <div id="cardFan" class="card-fan"></div>
+        </div>
+
+        <div class="draw-controls">
+          <button id="shuffleBtn" class="btn btn-ghost">洗牌</button>
+          <span id="drawStatus" class="draw-status"></span>
+        </div>
+        <button data-goto="spread" class="btn btn-ghost small">← 重新选牌阵</button>
+      </div>
+    </section>
+
+    <!-- ============ 屏 4：解读结果 ============ -->
+    <section id="screen-reading" class="screen" data-screen="reading" hidden>
+      <div class="reading-shell">
+        <div class="reading-head">
+          <p class="panel-kicker">你的牌阵解读</p>
+          <h2 id="readingTitle" class="panel-title">... 的启悟</h2>
+          <p id="readingMeta" class="context-line"></p>
+        </div>
+
+        <!-- 单张/多张卡片区 -->
+        <div id="cardsWrap" class="cards-wrap"></div>
+
+        <!-- 三大主星（若有出生时间） -->
+        <div id="bigThree" class="big-three" hidden></div>
+
+        <!-- 综合解读 -->
+        <div class="synthesis">
+          <div class="syn-block" id="astroBlock"></div>
+          <div class="syn-block" id="psychBlock"></div>
+          <div class="syn-block" id="actionBlock"></div>
+        </div>
+
+        <!-- 关闭免责 + 重抽 -->
+        <div class="reading-foot">
+          <p class="legal small" id="closingNote"></p>
+          <div class="row-actions share-actions">
+            <button id="shareImgBtn" class="btn btn-ghost small">🖼 下载分享卡</button>
+            <button id="shareTextBtn" class="btn btn-ghost small">✎ 复制解读文字</button>
+          </div>
+          <div class="share-themes" id="shareThemes" title="选择分享卡主题"></div>
+          <div class="row-actions">
+            <button data-goto="welcome" class="btn btn-ghost">换个问题</button>
+            <button data-goto="draw" class="btn btn-primary">再抽一次</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- 学习弹窗 -->
+  <div id="modal-learn" class="modal" hidden>
+    <div class="modal-card">
+      <button class="modal-close" data-close-modal>✕</button>
+      <h3 class="modal-title">如何解读你的牌</h3>
+      <div class="modal-body">
+        <p><b>本工具把塔罗当作一面镜子，而非水晶球。</b>它的解读综合三重视角：</p>
+        <ol class="steps">
+          <li><b>大阿卡纳本身</b>——其正位/逆位代表当下的能量状态。</li>
+          <li><b>星象共鸣</b>——牌所对应的星座/元素，与你的星座能量相互感应。</li>
+          <li><b>心理映照</b>——用荣格原型、投射与阴影等心理学视角，把牌意转译为自我觉察。</li>
+        </ol>
+        <p class="legal small">
+          注意一个重要的心理学提醒（巴纳姆效应）：占卜文本往往具有普遍适配性，容易被对号入座为“很准”。
+          请带着清醒与好奇使用，把它当作<strong>帮你看清自己</strong>的线索，而不是对你命运的确凿断言。
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="site-foot">
+    <span>♁ 星曜塔罗 · 内观即启明</span>
+    <span class="foot-sep">·</span>
+    <span>仅供自我探索，不预测真实未来</span>
+  </footer>
+
+  <!-- 轻提示 -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <!-- 历史弹窗 -->
+  <div id="modal-history" class="modal" hidden>
+    <div class="modal-card">
+      <button class="modal-close" data-close-history>✕</button>
+      <h3 class="modal-title">历史记录</h3>
+      <p class="history-sub">点击一条可重新查看 · 数据保存在本机浏览器</p>
+      <div id="historyList" class="history-list"></div>
+      <div class="history-actions">
+        <span id="historyCount" class="history-count"></span>
+        <button id="clearHistoryBtn" class="btn btn-ghost small">清空历史</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/astro.js"></script>
+  <script src="js/save.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
